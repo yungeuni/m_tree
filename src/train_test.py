@@ -50,7 +50,7 @@ learning_rate = 0.01
 iterations = 500
 
 # Open, High, Low, Volume, Close
-xy = np.loadtxt('1.csv', delimiter=',')
+xy = np.loadtxt('inputs.csv', delimiter=',')
 xy = xy[::-1] # reverse order (chronically ordered)
 xy = MinMaxScaler(xy)
 x = xy
@@ -113,6 +113,14 @@ with tf.Session() as sess:
                     targets: testY, predictions: test_predict})
     print("RMSE: {}".format(rmse_val))
 
+    # Successful Rate
+    sum_score = 0.0;
+
+    for i in range(test_size-1):
+        sum_score = sum_score + sum((testY[i] < testY[i+1]) == (test_predict[i] < test_predict[i+1]))
+    
+    print "Successful Rate: ", sum_score/(test_size-1)
+
     # Plot predictions
 
     plt.plot(testY)
@@ -121,11 +129,8 @@ with tf.Session() as sess:
     plt.ylabel("Stock Price")
     plt.show()
 
-    sum_score = 0.0;
+
     
-    for i in range(test_size-1):
-        sum_score = sum_score + sum((testY[i] < testY[i+1]) == (test_predict[i] < test_predict[i+1]))
-    
-    print sum_score/(test_size-1)
+
 
 
