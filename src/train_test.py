@@ -50,7 +50,7 @@ learning_rate = 0.01
 iterations = 500
 
 # Open, High, Low, Volume, Close
-xy = np.loadtxt('inputs.csv', delimiter=',')
+xy = np.loadtxt('./data/inputs.csv', delimiter=',')
 xy = xy[::-1] # reverse order (chronically ordered)
 xy = MinMaxScaler(xy)
 x = xy

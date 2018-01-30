@@ -10,7 +10,7 @@ style.use('ggplot')
 start = dt.datetime(2013, 1, 1)
 end = dt.datetime(2016, 12, 31)
 
-df = web.DataReader('AAPL', "yahoo", start, end)
+df = web.DataReader('012450.KS', "yahoo", start, end)
 
 #print(df.head())
 
@@ -18,8 +18,14 @@ keep_col = ['Open', 'High', 'Low', 'Volume', 'Close'] # except 'Date', 'Adj Clos
 
 new_df = df[keep_col][:]
 
-new_df.to_csv("inputs.csv", index=False, header=False)
+new_df.to_csv("./data/inputs.csv", index=False, header=False)
+
+print ("Shape: ", np.array(new_df).shape)
+
+plt.plot(df['Close'][:])
+plt.xlabel("Time Period")
+plt.ylabel("Stock Price")
+plt.show()
 
 
-print "Shape: ", np.array(new_df).shape
-
+    
