@@ -122,12 +122,13 @@ with tf.Session() as sess:
     print "Successful Rate: ", sum_score/(test_size-1)
 
     # Plot predictions
-
+    '''
     plt.plot(testY)
     plt.plot(test_predict)
     plt.xlabel("Time Period")
     plt.ylabel("Stock Price")
     plt.show()
+    '''
 
 
     
