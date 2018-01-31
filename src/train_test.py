@@ -45,7 +45,7 @@ def MinMaxScaler(data):
 seq_length = 7
 data_dim = 5
 hidden_dim = 10
-output_dim = 1
+output_dim = 5
 learning_rate = 0.01
 iterations = 500
 
@@ -62,7 +62,7 @@ dataY = []
 for i in range(0, len(y) - seq_length):
     _x = x[i:i + seq_length]
     _y = y[i + seq_length] # Next close price
-    print(_x, "->", _y)
+    #print(_x, "->", _y)
     dataX.append(_x)
     dataY.append(_y)
 
@@ -83,10 +83,11 @@ cell = tf.contrib.rnn.BasicLSTMCell(
     num_units=hidden_dim, state_is_tuple=True, activation=tf.tanh)
 outputs, _states = tf.nn.dynamic_rnn(cell, X, dtype=tf.float32)
 Y_pred = tf.contrib.layers.fully_connected(
-    outputs[:, -1], output_dim, activation_fn=None) # We use the last cell's output
+    outputs[:, 5], output_dim, activation_fn=None) # We use the last cell's output
 
 # cost/loss
 loss = tf.reduce_sum(tf.square(Y_pred - Y)) # sum of the squares
+
 # optimizer
 optimizer = tf.train.AdamOptimizer(learning_rate)
 train = optimizer.minimize(loss)
@@ -94,7 +95,9 @@ train = optimizer.minimize(loss)
 # RMSE
 targets = tf.placeholder(tf.float32, [None, 1])
 predictions = tf.placeholder(tf.float32, [None, 1])
+
 rmse = tf.sqrt(tf.reduce_mean(tf.square(targets - predictions)))
+
 
 with tf.Session() as sess:
     init = tf.global_variables_initializer()
@@ -104,13 +107,18 @@ with tf.Session() as sess:
     for i in range(iterations):
         _, step_loss = sess.run([train, loss], feed_dict={
                                 X: trainX, Y: trainY})
-        print("[step: {}] loss: {}".format(i, step_loss))
-
+        #print("[step: {}] loss: {}".format(i, step_loss))
 
     # Test step
     test_predict = sess.run(Y_pred, feed_dict={X: testX})
+
+    test_predict = test_predict[:,-1];
+    testY = testY[:,-1];
+    
+    '''
     rmse_val = sess.run(rmse, feed_dict={
                     targets: testY, predictions: test_predict})
+
     print("RMSE: {}".format(rmse_val))
 
     # Successful Rate
@@ -120,18 +128,12 @@ with tf.Session() as sess:
         sum_score = sum_score + sum((testY[i] < testY[i+1]) == (test_predict[i] < test_predict[i+1]))
     
     print "Successful Rate: ", sum_score/(test_size-1)
+    '''
 
     # Plot predictions
-    '''
     plt.plot(testY)
     plt.plot(test_predict)
     plt.xlabel("Time Period")
     plt.ylabel("Stock Price")
     plt.show()
-    '''
-
-
-    
-
-
 
