@@ -47,7 +47,7 @@ data_dim = 5
 hidden_dim = 10
 output_dim = 5
 learning_rate = 0.01
-iterations = 500
+iterations = 1000
 
 # Open, High, Low, Volume, Close
 xy = np.loadtxt('./data/inputs.csv', delimiter=',')
@@ -109,31 +109,30 @@ with tf.Session() as sess:
                                 X: trainX, Y: trainY})
         print("[step: {}] loss: {}".format(i, step_loss))
 
-    # Test step
-    test_predict = sess.run(Y_pred, feed_dict={X: testX})
+
+    inputX = testX[0:1,:,:]
     
+    from numpy import newaxis
 
-    # Successful Rate
-    sum_score = 0.0;
+    testY_len = 10
+    testY_hat = np.zeros((testY_len, 1))
+    
+    for i in range(testY_len):
+        test_predict = sess.run(Y_pred, feed_dict={X: inputX})
+        print inputX
+        print '\n'
 
-    for i in range(0, len(test_predict)-1):
-        if (test_predict[i,-1] < testY[i+1,-1]) == (test_predict[i,-1] < test_predict[i+1,-1]):
-            sum_score = sum_score + 1
-
-    sum_score = sum_score/(len(test_predict)-1)
-
-    print sum_score
-
-    '''
-    rmse_val = sess.run(rmse, feed_dict={
-                    targets: testY, predictions: test_predict})
-
-    print("RMSE: {}".format(rmse_val))
-    '''
+        inputX = inputX[:,1:,:]
+        inputX = np.append(inputX, test_predict[newaxis, :, :], axis=1)
+        
+        testY_hat[i,:] = float(test_predict[:,-1])
 
     # Plot predictions
-    plt.plot(testY)
-    plt.plot(test_predict)
+    plt.plot(testY[:testY_len,:])
+    plt.plot(testY_hat)
     plt.xlabel("Time Period")
     plt.ylabel("Stock Price")
     plt.show()
+
+    
+    
